@@ -12,17 +12,17 @@ cd "$BASEDIR"
 BASEDIR="$(pwd)"
 
 # Basic parameters
-NDK_RELEASE=${NDK_RELEASE:-r9d}
-NDK_MD5=c7c775ab3342965408d20fd18e71aa45
-NDK_PLATFORM=${NDK_PLATFORM:-android-14}
+NDK_RELEASE=${NDK_RELEASE:-r10e}
+NDK_MD5=19af543b068bdb7f27787c2bc69aba7f
+NDK_PLATFORM=${NDK_PLATFORM:-android-21}
 
 if [ "x$1" == "x--x86" ] ; then
-    NDK_TOOLCHAIN=${NDK_TOOLCHAIN:-x86-4.8}
+    NDK_TOOLCHAIN=${NDK_TOOLCHAIN:-x86-4.9}
     NDK_TARGET=${NDK_TARGET:-i686-linux-android}
     ARCH_OPTS=""
-    GHC_TARGET=${GHC_TARGET:-x86-4.8}
+    GHC_TARGET=${GHC_TARGET:-i686-unknown-linux-android}
 elif [ "x$1" == "x--arm" ] ; then
-    NDK_TOOLCHAIN=${NDK_TOOLCHAIN:-arm-linux-androideabi-4.8}
+    NDK_TOOLCHAIN=${NDK_TOOLCHAIN:-arm-linux-androideabi-4.9}
     NDK_TARGET=${NDK_TARGET:-arm-linux-androideabi}
     ARCH_OPTS="-fllvm"
     GHC_TARGET=${GHC_TARGET:-arm-unknown-linux-androideabi}
@@ -80,18 +80,21 @@ function apply_patches() {
 }
 
 # Download and configure the Android NDK toolchain
-NDK_TAR_FILE=android-ndk-${NDK_RELEASE}-linux-x86_64.tar.bz2
+NDK_TAR_FILE=android-ndk-${NDK_RELEASE}-linux-x86_64.bin
 NDK_TAR_PATH="${TARDIR}/${NDK_TAR_FILE}"
 NDK_PATH="$BASEDIR/android-ndk-$NDK_RELEASE"
 if ! [ -d "$NDK" ] ; then
     if ! [ -d "$NDK_PATH" ] ; then
         if ! check_md5 "$NDK_TAR_PATH" "$NDK_MD5" ; then
             echo Downloading the Android NDK $NDK_RELEASE
-            curl -o "${TARDIR}/${NDK_TAR_FILE}"  http://dl.google.com/android/ndk/${NDK_TAR_FILE}
+            pushd "${TARDIR}"
+            wget http://dl.google.com/android/ndk/${NDK_TAR_FILE}
+            popd
             check_md5 "$NDK_TAR_PATH" "$NDK_MD5"
         fi
         echo Unpacking the Android NDK $NDK_RELEASE
-        tar xf "$NDK_TAR_PATH"
+        chmod +x "$NDK_TAR_PATH"
+        "$NDK_TAR_PATH"
     fi
     echo Preparing the Android NDK toolchain in $NDK
     "$NDK_PATH/build/tools/make-standalone-toolchain.sh" --toolchain=$NDK_TOOLCHAIN --platform=$NDK_PLATFORM --install-dir="$NDK"
@@ -112,7 +115,9 @@ NCURSES_SRC="$NDK_ADDON_SRC/ncurses-${NCURSES_RELEASE}"
 if ! [ -d "$NCURSES_SRC" ] ; then
     if ! check_md5 "$NCURSES_TAR_PATH" "$NCURSES_MD5" ; then
         echo Downloading ncurses $NCURSES_RELEASE
-        curl -o "${TARDIR}/${NCURSES_TAR_FILE}"  http://ftp.gnu.org/pub/gnu/ncurses/${NCURSES_TAR_FILE}
+        pushd "${TARDIR}"
+        wget http://ftp.gnu.org/pub/gnu/ncurses/${NCURSES_TAR_FILE}
+        popd
         check_md5 "$NCURSES_TAR_PATH" "$NCURSES_MD5"
     fi
     (cd $NDK_ADDON_SRC; tar xf "$TARDIR/$NCURSES_TAR_FILE")
@@ -165,7 +170,9 @@ GMP_SRC="$NDK_ADDON_SRC/gmp-6.0.0"
 if ! [ -d "$GMP_SRC" ] ; then
     if ! check_md5 "$GMP_TAR_PATH" "$GMP_MD5" ; then
         echo Downloading gmp $GMP_RELEASE
-        curl -o "${TARDIR}/${GMP_TAR_FILE}"  https://gmplib.org/download/gmp/${GMP_TAR_FILE}
+        pushd $TARDIR
+        wget https://gmplib.org/download/gmp/${GMP_TAR_FILE}
+        popd
         check_md5 "$GMP_TAR_PATH" "$GMP_MD5"
     fi
     (cd $NDK_ADDON_SRC; tar xf "$TARDIR/$GMP_TAR_FILE")
@@ -185,7 +192,9 @@ GHC_STAGE0_TAR_PATH="${TARDIR}/${GHC_STAGE0_TAR_FILE}"
 if ! [ -e "$GHC_STAGE0" ] ; then
     if ! check_md5 "$GHC_STAGE0_TAR_PATH" "$GHC_STAGE0_MD5" ; then
         echo Downloading the GHC $GHC_RELEASE binary release
-        curl -o "${TARDIR}/${GHC_STAGE0_TAR_FILE}"  http://www.haskell.org/ghc/dist/$GHC_RELEASE/$GHC_STAGE0_TAR_FILE
+        pushd $TARDIR
+        wget http://www.haskell.org/ghc/dist/$GHC_RELEASE/$GHC_STAGE0_TAR_FILE
+        popd
         check_md5 "$GHC_STAGE0_TAR_PATH" "$GHC_STAGE0_MD5"
     fi
     echo Unpacking the GHC $GHC_RELEASE binary release
@@ -201,7 +210,9 @@ GHC_SRC_TAR_PATH="${TARDIR}/${GHC_SRC_TAR_FILE}"
 if ! [ -d "$GHC_SRC" ] ; then
     if ! check_md5 "$GHC_SRC_TAR_PATH" "$GHC_SRC_MD5" ; then
         echo Downloading the GHC $GHC_RELEASE source release
-        curl -o "${TARDIR}/${GHC_SRC_TAR_FILE}"  http://www.haskell.org/ghc/dist/$GHC_RELEASE/$GHC_SRC_TAR_FILE
+        pushd $TARDIR
+        wget http://www.haskell.org/ghc/dist/$GHC_RELEASE/$GHC_SRC_TAR_FILE
+        popd
         check_md5 "$GHC_SRC_TAR_PATH" "$GHC_SRC_MD5"
     fi
     pushd "$NDK_ADDON_SRC" > /dev/null
@@ -276,7 +287,7 @@ fi
 # Write hsc2hs wrapper
 HSC2HS_TARGET=$(ls $GHC_PREFIX/bin/$GHC_TARGET-hsc2hs)
 echo \#/bin/bash > $HSC2HS_TARGET
-echo 'exec /usr/bin/hsc2hs --cross-compile "$@" --define=linux_android_HOST_OS=1' >> $HSC2HS_TARGET
+echo 'exec /opt/ghc/bin/hsc2hs --cross-compile "$@" --define=linux_android_HOST_OS=1' >> $HSC2HS_TARGET
 chmod +x $HSC2HS_TARGET
 
 GHC_STAGE0_CABAL="$GHC_STAGE0_PREFIX/bin/cabal"
@@ -315,7 +326,7 @@ if ! [ -e "$GHC_STAGE0_CABAL" ] ; then
 fi
 
 CABAL_WRAPPER="$GHC_PREFIX/bin/$GHC_TARGET-cabal"
-if ! [ -e "$CABAL_WRAPPER" ] ; then
+if [ -e "$CABAL_WRAPPER" ] ; then
     # Write cabal wrapper
     echo \#/bin/bash > "$CABAL_WRAPPER"
     echo NDK=$GHC_PREFIX >> "$CABAL_WRAPPER"
@@ -347,3 +358,6 @@ done
 for f in $(ls $NDK/bin/$NDK_TARGET-*) ; do
     maybe_link $f $GHC_STAGE0_PREFIX/bin/$(basename $f)
 done
+
+#ln -s /opt/ghc/android-21/x86-4.9/bin/i686-pc-linux-android-hsc2hs /opt/ghc/android-21/x86-4.9/bin/x86-4.9-hsc2hs
+

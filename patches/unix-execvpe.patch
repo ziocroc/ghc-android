@@ -1,0 +1,22 @@
++++ unix/include/execvpe.h	2014-07-10 06:33:35.000000000 +0200
+--- unix/include/execvpe.h	2015-07-02 22:56:27.623400040 +0200
+@@ -20,7 +20,7 @@
+ 
+ #if !defined(_MSC_VER) && !defined(__MINGW32__) && !defined(_WIN32)
+ #ifndef __QNXNTO__
+-extern int execvpe(char *name, char *const argv[], char **envp);
++extern int execvpe(const char *name, char *const *argv, char * const *envp);
+ #endif
+ extern void pPrPr_disableITimers (void);
+ #endif
+--- unix/cbits/execvpe.c	2014-07-10 06:33:35.000000000 +0200
++++ unix/cbits/execvpe.c	2015-07-02 23:41:44.815860746 +0200
+@@ -59,7 +59,7 @@
+  */
+ 
+ int
+-execvpe(char *name, char *const argv[], char **envp)
++execvpe(const char *name, char *const *argv, char * const *envp)
+ {
+     register int lp, ln;
+     register char *p;

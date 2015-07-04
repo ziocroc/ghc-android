@@ -5,6 +5,7 @@ BIN_LD=$NDK/bin/$NDK_TARGET-ld
 CC=$NDK/bin/$NDK_TARGET-gcc
 PKGDB=$NDK/lib/$GHC_TARGET-ghc-$GHC_RELEASE/package.conf.d
 export HOME=$NDK
+export PKG_CONFIG_LIBDIR=$NDK/sysroot/usr/lib/pkgconfig
 
 mkdir -p $NDK/cabal
 [ -e "$NDK/.cabal" ] || ln -s $NDK/cabal $NDK/.cabal
