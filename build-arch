@@ -20,7 +20,7 @@ if [ "x$1" == "x--x86" ] ; then
     NDK_TOOLCHAIN=${NDK_TOOLCHAIN:-x86-4.9}
     NDK_TARGET=${NDK_TARGET:-i686-linux-android}
     ARCH_OPTS=""
-    GHC_TARGET=${GHC_TARGET:-i686-unknown-linux-android}
+    GHC_TARGET=${GHC_TARGET:-i686-pc-linux-android}
 elif [ "x$1" == "x--arm" ] ; then
     NDK_TOOLCHAIN=${NDK_TOOLCHAIN:-arm-linux-androideabi-4.9}
     NDK_TARGET=${NDK_TARGET:-arm-linux-androideabi}
@@ -326,7 +326,7 @@ if ! [ -e "$GHC_STAGE0_CABAL" ] ; then
 fi
 
 CABAL_WRAPPER="$GHC_PREFIX/bin/$GHC_TARGET-cabal"
-if [ -e "$CABAL_WRAPPER" ] ; then
+if ! [ -e "$CABAL_WRAPPER" ] ; then
     # Write cabal wrapper
     echo \#/bin/bash > "$CABAL_WRAPPER"
     echo NDK=$GHC_PREFIX >> "$CABAL_WRAPPER"
