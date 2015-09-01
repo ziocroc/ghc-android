@@ -15,6 +15,6 @@ index 3056014..5a2fdb2 100644
  import Data.Int
  import Data.Ratio
 -#endif
- import Data.Time.Clock.POSIX
+ import Data.Time.Clock.POSIX (POSIXTime)
  import System.Posix.Internals
  import Foreign.C

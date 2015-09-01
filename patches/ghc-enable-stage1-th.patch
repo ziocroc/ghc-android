@@ -26,12 +26,12 @@ diff --git a/mk/config.mk.in b/mk/config.mk.in
 index 5ef1f5c..95cbe5c 100644
 --- a/mk/config.mk.in
 +++ b/mk/config.mk.in
-@@ -178,7 +178,7 @@ GhcWithSMP := $(strip $(if $(filter YESNO, $(ArchSupportsSMP)$(GhcUnregisterised
+@@ -178,7 +178,7 @@
  # Whether to include GHCi in the compiler.  Depends on whether the RTS linker
  # has support for this OS/ARCH combination.
  
 -OsSupportsGHCi=$(strip $(patsubst $(TargetOS_CPP), YES, $(findstring $(TargetOS_CPP), mingw32 cygwin32 linux solaris2 freebsd dragonfly netbsd openbsd darwin kfreebsdgnu)))
 +OsSupportsGHCi=$(strip $(patsubst $(TargetOS_CPP), YES, $(findstring $(TargetOS_CPP), mingw32 cygwin32 linux linux_android solaris2 freebsd dragonfly netbsd openbsd darwin kfreebsdgnu)))
- ArchSupportsGHCi=$(strip $(patsubst $(TargetArch_CPP), YES, $(findstring $(TargetArch_CPP), i386 x86_64 powerpc sparc sparc64 arm)))
+ ArchSupportsGHCi=$(strip $(patsubst $(TargetArch_CPP), YES, $(findstring $(TargetArch_CPP), i386 x86_64 powerpc sparc sparc64 arm aarch64)))
  
  ifeq "$(OsSupportsGHCi)$(ArchSupportsGHCi)" "YESYES"
