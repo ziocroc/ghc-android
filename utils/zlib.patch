@@ -1,0 +1,49 @@
+--- a/Codec/Compression/Zlib/Stream.hsc
++++ b/Codec/Compression/Zlib/Stream.hsc
+@@ -1,6 +1,6 @@
+ {-# LANGUAGE CPP, ForeignFunctionInterface, DeriveDataTypeable #-}
+ #if __GLASGOW_HASKELL__ >= 702
+-{-# LANGUAGE DeriveGeneric #-}
++{-# LANGUAGE DeriveGeneric, CApiFFI #-}
+ #endif
+ -----------------------------------------------------------------------------
+ -- |
+@@ -1008,13 +1008,13 @@
+ -- So we define c_inflateInit2 and c_deflateInit2 here as wrappers around
+ -- their _ counterparts and pass the extra args.
+ 
+-foreign import ccall unsafe "zlib.h inflateInit2_"
+-  c_inflateInit2_ :: StreamState -> CInt -> Ptr CChar -> CInt -> IO CInt
+ 
+-c_inflateInit2 :: StreamState -> CInt -> IO CInt
+-c_inflateInit2 z n =
+-  withCAString #{const_str ZLIB_VERSION} $ \versionStr ->
+-    c_inflateInit2_ z n versionStr (#{const sizeof(z_stream)} :: CInt)
++foreign import capi unsafe "zlib.h inflateInit2"
++  c_inflateInit2 :: StreamState -> CInt -> IO CInt
++ 
++foreign import capi unsafe "zlib.h deflateInit2"
++  c_deflateInit2 :: StreamState
++                 -> CInt -> CInt -> CInt -> CInt -> CInt -> IO CInt
+ 
+ foreign import ccall unsafe "zlib.h inflate"
+   c_inflate :: StreamState -> CInt -> IO CInt
+@@ -1025,18 +1025,6 @@
+ foreign import ccall unsafe "zlib.h inflateReset"
+   c_inflateReset :: StreamState -> IO CInt
+ 
+-foreign import ccall unsafe "zlib.h deflateInit2_"
+-  c_deflateInit2_ :: StreamState
+-                  -> CInt -> CInt -> CInt -> CInt -> CInt
+-                  -> Ptr CChar -> CInt
+-                  -> IO CInt
+-
+-c_deflateInit2 :: StreamState
+-               -> CInt -> CInt -> CInt -> CInt -> CInt -> IO CInt
+-c_deflateInit2 z a b c d e =
+-  withCAString #{const_str ZLIB_VERSION} $ \versionStr ->
+-    c_deflateInit2_ z a b c d e versionStr (#{const sizeof(z_stream)} :: CInt)
+-
+ foreign import ccall unsafe "zlib.h deflateSetDictionary"
+   c_deflateSetDictionary :: StreamState
+                          -> Ptr CChar

@@ -32,7 +32,7 @@ else
 fi
 
 NDK_DESC=$NDK_PLATFORM-$NDK_TOOLCHAIN
-NDK="$GHCHOME/$NDK_PLATFORM/$NDK_TOOLCHAIN"
+NDK="$GHCHOME/$NDK_PLATFORM-2/$NDK_TOOLCHAIN"
 NDK_ADDON_SRC="$BASEDIR/build-$NDK_DESC"
 NDK_ADDON_PREFIX="$NDK/sysroot/usr"
 
@@ -41,8 +41,9 @@ GHC_STAGE0_MD5=ebbbecb5e5c4fb7e07ecd9695eac6fa1
 GHC_SRC_MD5=fc1269fbc52513fa6b2ae6051c365bc3
 
 GHC_STAGE0_SRC="$BASEDIR/ghc-$GHC_RELEASE"
-GHC_STAGE0_PREFIX="$GHCHOME"
+GHC_STAGE0_PREFIX="/usr/local"
 GHC_STAGE0="$GHC_STAGE0_PREFIX/bin/ghc"
+GHC_STAGE0_CABAL="/home/nix/.cabal/bin/cabal"
 
 GHC_PREFIX="$NDK"
 GHC_SRC="$NDK_ADDON_SRC/ghc-$GHC_RELEASE"
@@ -292,7 +293,6 @@ echo \#/bin/bash > $HSC2HS_TARGET
 echo 'exec /opt/ghc/bin/hsc2hs --cross-compile "$@" --define=linux_android_HOST_OS=1' >> $HSC2HS_TARGET
 chmod +x $HSC2HS_TARGET
 
-GHC_STAGE0_CABAL="$GHC_STAGE0_PREFIX/bin/cabal"
 if ! [ -e "$GHC_STAGE0_CABAL" ] ; then
     # install a cabal that supports cross compilation
     CABAL_SRC="$NDK_ADDON_SRC/cabal"
@@ -335,7 +335,7 @@ if ! [ -e "$CABAL_WRAPPER" ] ; then
     echo NDK_TARGET=$NDK_TARGET >> "$CABAL_WRAPPER"
     echo GHC_TARGET=$GHC_TARGET >> "$CABAL_WRAPPER"
     echo GHC_RELEASE=$GHC_RELEASE >> "$CABAL_WRAPPER"
-    echo BIN_CABAL=$GHC_STAGE0_PREFIX/bin/cabal >> "$CABAL_WRAPPER"
+    echo BIN_CABAL=$GHC_STAGE0_CABAL >> "$CABAL_WRAPPER"
     cat "$BASEDIR/patches/cabal-wrapper" >> "$CABAL_WRAPPER"
     chmod +x "$CABAL_WRAPPER"
 fi
