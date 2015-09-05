@@ -1,0 +1,12 @@
+--- a/Data/ByteString/Builder/ASCII.hs
++++ b/Data/ByteString/Builder/ASCII.hs
+@@ -96,9 +96,7 @@
+ import           Data.ByteString.Builder.Prim.Internal.UncheckedShifts
+                    ( caseWordSize_32_64 )
+ 
+-# if __GLASGOW_HASKELL__ < 710
+ import           GHC.Num     (quotRemInteger)
+-# endif
+ import           GHC.Types   (Int(..))
+ 
+ 
