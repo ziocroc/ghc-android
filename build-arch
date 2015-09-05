@@ -36,9 +36,9 @@ NDK="$GHCHOME/$NDK_PLATFORM/$NDK_TOOLCHAIN"
 NDK_ADDON_SRC="$BASEDIR/build-$NDK_DESC"
 NDK_ADDON_PREFIX="$NDK/sysroot/usr"
 
-GHC_RELEASE=${GHC_RELEASE:-7.8.3}
-GHC_STAGE0_MD5=4dd880afc51c6ba6126e26d17b6340d9
-GHC_SRC_MD5=5e34b2a29564596c9ed83fb8667b47d4
+GHC_RELEASE=${GHC_RELEASE:-7.10.2}
+GHC_STAGE0_MD5=ebbbecb5e5c4fb7e07ecd9695eac6fa1
+GHC_SRC_MD5=fc1269fbc52513fa6b2ae6051c365bc3
 
 GHC_STAGE0_SRC="$BASEDIR/ghc-$GHC_RELEASE"
 GHC_STAGE0_PREFIX="$GHCHOME"
@@ -53,7 +53,7 @@ NCURSES_MD5=8cb9c412e5f2d96bc6f459aa8c6282a1
 GMP_RELEASE=6.0.0a
 GMP_MD5=1e6da4e434553d2811437aa42c7f7c76
 
-CONFIG_SUB_SRC=${CONFIG_SUB_SRC:-/usr/share/automake-1.14}
+CONFIG_SUB_SRC=${CONFIG_SUB_SRC:-/usr/share/automake-1.15}
 
 BUILD_GCC=gcc
 BUILD_ARCH=$($BUILD_GCC -v 2>&1 | grep ^Target: | cut -f 2 -d ' ')
@@ -236,6 +236,7 @@ HADDOCK_DOCS       = NO
 BUILD_DOCBOOK_HTML = NO
 BUILD_DOCBOOK_PS   = NO
 BUILD_DOCBOOK_PDF  = NO
+INTEGER_LIBRARY = integer-gmp
 EOF
 
     # Update config.sub and config.guess
@@ -250,6 +251,7 @@ EOF
     apply_patches "haskeline-*" "$GHC_SRC/libraries/haskeline"
     apply_patches "unix-*" "$GHC_SRC/libraries/unix"
     apply_patches "base-*" "$GHC_SRC/libraries/base"
+    apply_patches "bytestring-*" "$GHC_SRC/libraries/bytestring"
 
     # Configure
     ./configure --prefix="$GHC_PREFIX" --target=$NDK_TARGET --with-ghc=$GHC_STAGE0 --with-gcc=$NDK/bin/$NDK_TARGET-gcc
